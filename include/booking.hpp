@@ -8,9 +8,11 @@ class Booking
 {
 
 	public:
-		Booking(const QDateTime start,const QDateTime finish,const QByteArray& passcode);
+		Booking(const QDateTime start,const QDateTime finish);
 		Booking(const QJsonValue& val);
 		bool check_validity(const QDateTime & ref)const;
+		void set_code(quint64 code);
+		bool verify_code(quint64 code)const;
 		bool valid()const{return is_valid;}
 		QDateTime get_start(void){return m_start;}
 		QDateTime get_finish(void){return m_finish;}
