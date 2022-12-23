@@ -1,20 +1,38 @@
 cmake_minimum_required(VERSION 3.16)
 project(IOTA-BOOKING LANGUAGES CXX)
-
 include(local_conf.cmake OPTIONAL)
 
-find_package(Qt6 REQUIRED COMPONENTS Core )
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+find_package(Qt6 REQUIRED COMPONENTS Core Quick Gui)
 
-add_library(booking booking.cpp include/booking.hpp)
+
+qt6_add_qml_module(booking
+	URI plugins.booking
+	VERSION 1.0
+	SOURCES
+	include/booking.hpp src/booking.cpp include/Hour_model.hpp src/Hour_model.cpp include/Day_model.hpp src/Day_model.cpp
+	QML_FILES
+	qml/Horario_delegate.qml
+	qml/Horario_list_view.qml
+	qml/Dia_delegate.qml
+	qml/Day_swipe_view.qml
+	qml/window.qml
+	OUTPUT_DIRECTORY
+	plugins/booking
+	)
 
 target_include_directories(booking PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 	"$<INSTALL_INTERFACE:include>")
 target_link_libraries(booking PUBLIC
 	Qt6::Core
+	Qt6::Gui Qt6::Quick
 	)
 
 install(TARGETS booking EXPORT bookingTargets DESTINATION lib)
 install(DIRECTORY include/ DESTINATION include/)
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/plugins/booking DESTINATION plugins/)
 
 install(EXPORT bookingTargets
 	FILE bookingTargets.cmake
