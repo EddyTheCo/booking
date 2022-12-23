@@ -7,6 +7,11 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Qt6 REQUIRED COMPONENTS Core Quick Gui)
 
+list(APPEND QML_DIRS ${CMAKE_CURRENT_BINARY_DIR} )
+set(QML_IMPORT_PATH "${QML_DIRS}" CACHE STRING "" FORCE)
+message(STATUS "inside booking")
+message(STATUS "QML_DIRS:${QML_DIRS}")
+message(STATUS "QML_IMPORT_PATH:${QML_IMPORT_PATH}")
 
 qt6_add_qml_module(booking
 	URI plugins.booking
@@ -33,7 +38,6 @@ target_link_libraries(booking PUBLIC
 install(TARGETS booking EXPORT bookingTargets DESTINATION lib)
 install(DIRECTORY include/ DESTINATION include/)
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/plugins/booking DESTINATION plugins/)
-set(QML_IMPORT_PATH ${CMAKE_CURRENT_BINARY_DIR}/plugins/booking CACHE STRING "" FORCE)
 install(EXPORT bookingTargets
 	FILE bookingTargets.cmake
 	DESTINATION lib/cmake/booking
