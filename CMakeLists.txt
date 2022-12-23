@@ -33,7 +33,7 @@ target_link_libraries(booking PUBLIC
 install(TARGETS booking EXPORT bookingTargets DESTINATION lib)
 install(DIRECTORY include/ DESTINATION include/)
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/plugins/booking DESTINATION plugins/)
-
+set(QML_IMPORT_PATH ${CMAKE_CURRENT_BINARY_DIR}/plugins/booking CACHE STRING "" FORCE)
 install(EXPORT bookingTargets
 	FILE bookingTargets.cmake
 	DESTINATION lib/cmake/booking
