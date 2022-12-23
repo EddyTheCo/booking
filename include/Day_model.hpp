@@ -36,7 +36,7 @@ class Day_model : public QAbstractListModel
 {
     Q_OBJECT
     QML_ELEMENT
-    Q_PROPERTY(int count READ count WRITE setCount NOTIFY countChanged)
+    Q_PROPERTY(int count READ count CONSTANT)
 
 public:
     enum ModelRoles {
@@ -45,7 +45,6 @@ public:
     };
     int count() const;
     explicit Day_model(QObject *parent = nullptr);
-    Q_INVOKABLE Day_box* get(int i);
     Q_INVOKABLE void get_new_bookings(void)const;
 
     void append(Day_box* o);
@@ -64,7 +63,6 @@ signals:
     void new_bookings(std::vector<Booking> nbooks )const;
 
 public slots:
-    void setCount(int count);
     void add_booking(const Booking& nbook);
 
 

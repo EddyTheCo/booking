@@ -44,7 +44,6 @@ public:
     };
     int count() const;
     explicit Hour_model(QObject *parent = nullptr);
-    Q_INVOKABLE Hour_box* get(int i);
     Q_INVOKABLE bool setProperty(int i, QString role, const QVariant value);
     void add_booked_hours(const std::vector<int>& bhours);
     std::vector<Booking> get_bookings_from_selected(QDate day);
