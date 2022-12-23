@@ -8,6 +8,7 @@ ColumnLayout
     id:dia_delegate
     spacing:hours_container.delegate_height
     required property  date day
+    required property  bool can_book
     required property  Hour_model hour_model
     Rectangle
     {
@@ -66,7 +67,7 @@ ColumnLayout
         Layout.alignment: Qt.AlignBottom
 
         delegate_height:height/5
-        can_book:true
+        can_book:can_book
         horario_model: dia_delegate.hour_model
     }
 
