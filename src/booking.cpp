@@ -3,7 +3,7 @@
 #include <QDataStream>
 #include <QCryptographicHash>
 #include<QIODevice>
-Booking::Booking(const QDateTime start,const QDateTime finish):is_valid(false),
+Booking::Booking(const QDateTime start,const QDateTime finish):
     m_start(start),m_finish(finish)
 {
 
@@ -25,7 +25,7 @@ void Booking::set_code_str(QString code_str)
 bool Booking::verify_code_str(QString code_str)const
 {
     quint64 V_code_m=static_cast<quint64>(code_str.toULongLong());
-
+    qDebug()<<V_code_m;
     QByteArray var;
     auto buffer=QDataStream(&var,QIODevice::WriteOnly | QIODevice::Append);
     buffer.setByteOrder(QDataStream::LittleEndian);
@@ -36,15 +36,15 @@ bool Booking::verify_code_str(QString code_str)const
 
 Booking::Booking(const QJsonValue& val)
 {
+    qDebug()<<"val:\n"<<val;
     m_start=QDateTime();
     m_start.setMSecsSinceEpoch((val.toObject()["start"].isNull())?0:val.toObject()["start"].toInteger());
     m_finish=QDateTime();
     m_finish.setMSecsSinceEpoch((val.toObject()["finish"].isNull())?0:val.toObject()["finish"].toInteger());
-
+    qDebug()<<"start:"<<val.toObject()["start"].toInteger();
+    qDebug()<<"finish:"<<val.toObject()["finish"].toInteger();
     if(!val.toObject()["passcode"].isNull())
         m_passcode=QByteArray::fromHex(val.toObject()["passcode"].toString().toLatin1());
-    if(m_passcode.size()!=32)
-        is_valid=false;
 
 }
 bool Booking::check_validity(const QDateTime & ref)const
