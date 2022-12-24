@@ -15,6 +15,7 @@ spacing:4
     Text {
         id:time_
         text: root_box.hour
+        color:"white"
         Layout.preferredWidth: 80
         Layout.minimumWidth: 50
         Layout.fillHeight: true
@@ -31,10 +32,10 @@ spacing:4
         Layout.maximumHeight:   20
         Layout.fillWidth: true
         Layout.alignment: Qt.AlignTop
-        border.color:'black'
+        border.color:'white'
         border.width: 1
         height:1
-        color:'black'
+        color:'white'
     }
     Rectangle
     {
@@ -44,10 +45,10 @@ spacing:4
         Layout.fillWidth: true
         Layout.alignment: Qt.AlignHCenter
         Layout.maximumWidth: 500
-        border.color:'black'
+        border.color:'white'
         border.width: 1
         height:parent.height
-        color: root_box.booked?'#1e1e1e':((choosen?'green':'transparent'))
+        color: root_box.booked?'#e7001b':((choosen?'0f79af':'transparent'))
 
         opacity:0.7
         Text

@@ -19,7 +19,7 @@ ColumnLayout
         Layout.fillWidth: true
 
         Layout.alignment: Qt.AlignTop
-        color: 'blue'
+        color: '#0f79af'
         ColumnLayout
         {
 
@@ -30,6 +30,7 @@ ColumnLayout
                   return ["Sun", "Mon","Tue","Wed","Thu","Fri","Sat"][dayIndex] || '';
                 }
                 text: dayOfWeekAsString(dia_delegate.day.getDay())
+                color:"white"
                 font.pointSize:50
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -40,6 +41,7 @@ ColumnLayout
             {
                 text: dia_delegate.day.toLocaleDateString({ year: 'numeric', month: 'long', day: 'numeric' })
                 font.pointSize:30
+                color:"white"
                 Layout.minimumHeight:  25
                 Layout.minimumWidth:  25
                 Layout.fillWidth: true
