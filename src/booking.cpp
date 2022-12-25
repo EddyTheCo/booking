@@ -58,10 +58,12 @@ std::vector<QDate> Booking::get_days(void)const
     std::vector<QDate> days;
     auto startday=m_start.date();
     const auto finishday=m_finish.date();
+    days.push_back(startday);
+
     for(auto i=0;i<startday.daysTo(finishday);i++)
     {
-        days.push_back(startday);
         startday=startday.addDays(1);
+        days.push_back(startday);
     }
 
     return days;
