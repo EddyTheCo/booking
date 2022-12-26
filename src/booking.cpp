@@ -34,18 +34,27 @@ bool Booking::verify_code_str(QString code_str)const
     return(V_passcode==m_passcode);
 }
 
-Booking::Booking(const QJsonValue& val)
+Booking::Booking(QDataStream &buffer, bool with_passcode)
 {
-    qDebug()<<"val:\n"<<val;
-    m_start=QDateTime();
-    m_start.setMSecsSinceEpoch((val.toObject()["start"].isNull())?0:val.toObject()["start"].toInteger());
-    m_finish=QDateTime();
-    m_finish.setMSecsSinceEpoch((val.toObject()["finish"].isNull())?0:val.toObject()["finish"].toInteger());
-    qDebug()<<"start:"<<val.toObject()["start"].toInteger();
-    qDebug()<<"finish:"<<val.toObject()["finish"].toInteger();
-    if(!val.toObject()["passcode"].isNull())
-        m_passcode=QByteArray::fromHex(val.toObject()["passcode"].toString().toLatin1());
 
+    m_start=QDateTime();
+    quint64 st,fi;
+    buffer>>st>>fi;
+    m_start.setMSecsSinceEpoch(st);
+    m_finish.setMSecsSinceEpoch(fi);
+    if(with_passcode)
+    {
+        buffer.readRawData(m_passcode.data(),32);
+    }
+
+}
+void Booking::serialize(QDataStream &buffer,bool with_passcode) const
+{
+    buffer<<m_start.toMSecsSinceEpoch()<<m_finish.toMSecsSinceEpoch();
+    if(with_passcode)
+    {
+        buffer.writeRawData(m_passcode.data(),32);
+    }
 }
 bool Booking::check_validity(const QDateTime & ref)const
 {
@@ -81,14 +90,7 @@ std::vector<int> Booking::get_hours(const QDate& day)const
     }
     return booked_hours;
 }
-QJsonObject Booking::get_Json(bool with_passcode) const
-{
-    QJsonObject var;
-    var.insert("start",QString::number(m_start.toMSecsSinceEpoch()));
-    var.insert("finish",QString::number(m_finish.toMSecsSinceEpoch()));
-    if(with_passcode)var.insert("passcode",QString(m_passcode.toHex()));
-    return var;
-}
+
 quint64 Booking::calculate_price(quint64 per_hour)const
 {
     const auto msecs=m_start.msecsTo(m_finish)/1000/60/60;

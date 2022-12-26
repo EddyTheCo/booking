@@ -10,7 +10,7 @@ class Booking
 {
 	public:
 		Booking(const QDateTime start,const QDateTime finish);
-		Booking(const QJsonValue& val);
+        Booking(QDataStream &buffer, bool with_passcode=false);
 		std::vector<QDate> get_days(void)const;
 		std::vector<int> get_hours(const QDate& day)const;
 		bool check_validity(const QDateTime & ref)const;
@@ -29,7 +29,7 @@ class Booking
 		{
 			return(b1.m_finish<b2);
 		}
-		QJsonObject get_Json(bool with_passcode) const;
+        void serialize(QDataStream &buffer,bool with_passcode) const;
 		quint64 calculate_price(quint64 per_hour)const;
 signals:
 		void state_changed(void);
