@@ -40,11 +40,16 @@ Booking::Booking(QDataStream &buffer, bool with_passcode)
     m_start=QDateTime();
     quint64 st,fi;
     buffer>>st>>fi;
+
     m_start.setMSecsSinceEpoch(st);
     m_finish.setMSecsSinceEpoch(fi);
+    qDebug()<<"m_start:"<<m_start;
+    qDebug()<<"m_finish:"<<m_finish;
     if(with_passcode)
     {
+        m_passcode=QByteArray(32,0);
         buffer.readRawData(m_passcode.data(),32);
+        qDebug()<<"m_passcode:"<<m_passcode.toHex();
     }
 
 }
