@@ -16,6 +16,7 @@ class Booking
 		bool check_validity(const QDateTime & ref)const;
 		QString code_str(void)const;
 		void set_code_str(QString code);
+        QByteArray get_passcode(void)const{return m_passcode;}
 		bool verify_code_str(QString code_str)const;
 		QDateTime start(void)const{return m_start;}
 		QDateTime finish(void)const{return m_finish;}
@@ -23,6 +24,10 @@ class Booking
 		void set_finish(QDateTime finish_){m_finish=finish_;}
 		friend bool operator < (const Booking& b1, const Booking& b2)
 		{
+            qDebug()<<"comparing:\n b1.m_start:"<<b1.m_start;
+            qDebug()<<"b1.m_finish:"<<b1.m_finish;
+            qDebug()<<"b2.m_start:"<<b2.m_start;
+            qDebug()<<"b1<b2"<<(b1.m_start<b2.m_start&&b1.m_finish<b2.m_start);
 			return(b1.m_start<b2.m_start&&b1.m_finish<b2.m_start);
 		}
 		friend bool operator < (const Booking& b1, const QDateTime& b2)
