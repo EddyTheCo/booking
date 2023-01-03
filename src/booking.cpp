@@ -107,8 +107,8 @@ std::vector<int> Booking::get_hours(const QDate& day)const
 
 quint64 Booking::calculate_price(quint64 per_hour)const
 {
-    const auto msecs=m_start.msecsTo(m_finish)/1000/60/60;
-    return per_hour*msecs;
+    const auto hours=(m_start.secsTo(m_finish)+1)/60/60;
+    return per_hour*hours;
 }
 
 
