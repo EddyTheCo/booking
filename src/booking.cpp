@@ -4,43 +4,38 @@
 #include <QCryptographicHash>
 #include<QIODevice>
 Booking::Booking(const QDateTime start,const QDateTime finish):
-    m_start(start),m_finish(finish)
+    m_start(start),m_finish(finish),code_str_("")
 {
 
 };
 
-QString Booking::code_str(void)const
-{
-    return QString::number(code_m);
-}
 void Booking::set_code_str(QString code_str)
 {
-    qDebug()<<"code_str:"<<code_str;
-    code_m=static_cast<quint64>(code_str.toULongLong());
-    qDebug()<<"code_m:"<<code_m;
+
+    code_str_=code_str;
+    const auto code_m=static_cast<quint64>(code_str.toULongLong());
     QByteArray var;
     auto buffer=QDataStream(&var,QIODevice::WriteOnly | QIODevice::Append);
     buffer.setByteOrder(QDataStream::LittleEndian);
-    qDebug()<<"CreatingCode:"<<m_start.toMSecsSinceEpoch()<<" "<<m_finish.toMSecsSinceEpoch()<<" "<<code_m;
+
     buffer<<m_start.toMSecsSinceEpoch()<<m_finish.toMSecsSinceEpoch()<<code_m;
     m_passcode=QCryptographicHash::hash(var,QCryptographicHash::Blake2b_256);
 }
 bool Booking::verify_code_str(QString code_str)const
 {
     quint64 V_code_m=static_cast<quint64>(code_str.toULongLong());
-    qDebug()<<V_code_m;
+
     QByteArray var;
     auto buffer=QDataStream(&var,QIODevice::WriteOnly | QIODevice::Append);
     buffer.setByteOrder(QDataStream::LittleEndian);
     buffer<<m_start.toMSecsSinceEpoch()<<m_finish.toMSecsSinceEpoch()<<V_code_m;
-    qDebug()<<"VerifiyingCode:"<<m_start.toMSecsSinceEpoch()<<" "<<m_finish.toMSecsSinceEpoch()<<" "<<V_code_m;
+
     auto V_passcode=QCryptographicHash::hash(var,QCryptographicHash::Blake2b_256);
-    qDebug()<<"V_passcode:"<<V_passcode.toHex();
-    qDebug()<<"m_passcode:"<<m_passcode.toHex();
+
     return(V_passcode==m_passcode);
 }
 
-Booking::Booking(QDataStream &buffer, bool with_passcode)
+Booking::Booking(QDataStream &buffer, bool with_passcode):code_str_("")
 {
 
     m_start=QDateTime();
@@ -49,24 +44,20 @@ Booking::Booking(QDataStream &buffer, bool with_passcode)
 
     m_start.setMSecsSinceEpoch(st);
     m_finish.setMSecsSinceEpoch(fi);
-    qDebug()<<"m_start:"<<m_start;
-    qDebug()<<"m_finish:"<<m_finish;
+
     if(with_passcode)
     {
         m_passcode=QByteArray(32,0);
         buffer.readRawData(m_passcode.data(),32);
-        qDebug()<<"m_passcode:"<<m_passcode.toHex();
     }
 
 }
 void Booking::serialize(QDataStream &buffer,bool with_passcode) const
 {
-    qDebug()<<"m_start:"<<m_start;
-    qDebug()<<"m_finish:"<<m_finish;
+
     buffer<<m_start.toMSecsSinceEpoch()<<m_finish.toMSecsSinceEpoch();
     if(with_passcode)
     {
-        qDebug()<<"m_passcode:"<<m_passcode.toHex();
         buffer.writeRawData(m_passcode.data(),32);
     }
 }
