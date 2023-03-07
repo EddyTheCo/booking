@@ -5,12 +5,20 @@
 #include<QString>
 #include<QDateTime>
 #include<QJsonValue>
+#include<QJsonObject>
 
 class Booking
 {
 	public:
 		Booking(const QDateTime start,const QDateTime finish);
         Booking(QDataStream &buffer, bool with_passcode=false);
+        QJsonObject get_jsob(void)const{
+            QJsonObject var;
+            var.insert("start",m_start.toString());
+            var.insert("finish",m_finish.toString());
+            var.insert("code_str",code_str_);
+            return var;
+        }
 		std::vector<QDate> get_days(void)const;
 		std::vector<int> get_hours(const QDate& day)const;
 		bool check_validity(const QDateTime & ref)const;
@@ -36,7 +44,7 @@ signals:
 		void state_changed(void);
 	private:
 
-		QDateTime m_start,m_finish;
+        QDateTime m_start, m_finish;
 		QByteArray m_passcode;   //32 byte
         QString code_str_;
 };
