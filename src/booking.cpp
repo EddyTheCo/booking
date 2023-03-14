@@ -101,6 +101,67 @@ quint64 Booking::calculate_price(quint64 per_hour)const
     const auto hours=(m_start.secsTo(m_finish)+1)/60/60;
     return per_hour*hours;
 }
+QByteArray Booking::serialize_state(std::vector<Booking>&books, const quint64&price_per_hour_, const QByteArray &pay_to_address_hash)
+{
+    QByteArray var;
+    auto buffer=QDataStream(&var,QIODevice::WriteOnly | QIODevice::Append);
+    buffer.setByteOrder(QDataStream::LittleEndian);
+    buffer<<static_cast<quint16>(books.size());
+    for(auto& v:books)
+    {
+        v.serialize(buffer,0);
+    }
+    buffer<<price_per_hour_;
+    buffer.writeRawData(pay_to_address_hash,32);
+    return var;
 
+}
 
+std::tuple<std::vector<Booking>, quint64, QByteArray>  Booking::deserialize_state(QByteArray& state)
+{
+    std::vector<Booking> var;
+    auto pay_to_address_hash=QByteArray(32,0);
+    quint64 price;
+    if(state.size()>40)
+    {
+        auto buffer=QDataStream(&state,QIODevice::ReadOnly);
+        buffer.setByteOrder(QDataStream::LittleEndian);
+        quint16 nbooks;
+        buffer>>nbooks;
+        if(state.size()==42+nbooks*16)
+        {
+            for (auto i=0;i<nbooks;i++)
+            {
+                const auto b=Booking(buffer,0);
+                if(b.finish()>QDateTime::currentDateTime()&&b.finish().date()<QDate::currentDate().addDays(7))
+                {
+                    var.push_back(b);
+                }
 
+            }
+
+            buffer>>price;
+            buffer.readRawData(pay_to_address_hash.data(),32);
+        }
+    }
+
+    return {var,price,pay_to_address_hash};
+}
+Booking Booking::get_new_booking_from_metadata(QByteArray& metadata)
+{
+    if(metadata.size()==48)
+    {
+        auto buffer=QDataStream(&metadata,QIODevice::ReadOnly);
+        buffer.setByteOrder(QDataStream::LittleEndian);
+        return Booking(buffer,1);
+    }
+    return Booking(QDateTime::fromMSecsSinceEpoch(0),QDateTime::fromMSecsSinceEpoch(0));
+}
+QByteArray Booking::create_new_bookings_metadata(Booking &book)
+{
+    QByteArray var;
+    auto buffer=QDataStream(&var,QIODevice::WriteOnly | QIODevice::Append);
+    buffer.setByteOrder(QDataStream::LittleEndian);
+    book.serialize(buffer,1);
+    return var;
+}
