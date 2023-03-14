@@ -40,8 +40,8 @@ class Booking
 		}
         void serialize(QDataStream &buffer,bool with_passcode) const;
 		quint64 calculate_price(quint64 per_hour)const;
-        static std::tuple<std::set<Booking>, quint64, QByteArray> deserialize_state(QByteArray &state);
-        static QByteArray serialize_state(const std::set<Booking>& books, const quint64&price_per_hour_, const QByteArray &pay_to_address_hash);
+        static std::tuple<std::set<Booking>, quint64, QByteArray,quint32> deserialize_state(QByteArray &state);
+        static QByteArray serialize_state(const std::set<Booking>& books, const quint64&price_per_hour_, const QByteArray &pay_to_address_hash,const quint32& consindex);
         static Booking get_new_booking_from_metadata(QByteArray& metadata);
         static QByteArray create_new_bookings_metadata(Booking &book);
 signals:
