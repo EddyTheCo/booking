@@ -101,7 +101,7 @@ quint64 Booking::calculate_price(quint64 per_hour)const
     const auto hours=(m_start.secsTo(m_finish)+1)/60/60;
     return per_hour*hours;
 }
-QByteArray Booking::serialize_state(std::vector<Booking>&books, const quint64&price_per_hour_, const QByteArray &pay_to_address_hash)
+QByteArray Booking::serialize_state(const std::set<Booking>&books, const quint64&price_per_hour_, const QByteArray &pay_to_address_hash)
 {
     QByteArray var;
     auto buffer=QDataStream(&var,QIODevice::WriteOnly | QIODevice::Append);
@@ -117,9 +117,9 @@ QByteArray Booking::serialize_state(std::vector<Booking>&books, const quint64&pr
 
 }
 
-std::tuple<std::vector<Booking>, quint64, QByteArray>  Booking::deserialize_state(QByteArray& state)
+std::tuple<std::set<Booking>, quint64, QByteArray> Booking::deserialize_state(QByteArray& state)
 {
-    std::vector<Booking> var;
+    std::set<Booking> var;
     auto pay_to_address_hash=QByteArray(32,0);
     quint64 price;
     if(state.size()>40)
@@ -135,7 +135,7 @@ std::tuple<std::vector<Booking>, quint64, QByteArray>  Booking::deserialize_stat
                 const auto b=Booking(buffer,0);
                 if(b.finish()>QDateTime::currentDateTime()&&b.finish().date()<QDate::currentDate().addDays(7))
                 {
-                    var.push_back(b);
+                    var.insert(b);
                 }
 
             }
