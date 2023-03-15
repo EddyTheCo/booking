@@ -101,7 +101,7 @@ quint64 Booking::calculate_price(quint64 per_hour)const
     const auto hours=(m_start.secsTo(m_finish)+1)/60/60;
     return per_hour*hours;
 }
-QByteArray Booking::serialize_state(const std::set<Booking>&books, const quint64&price_per_hour_, const QByteArray &pay_to_address_hash,const quint32& consindex)
+QByteArray Booking::serialize_state(const std::set<Booking>&books, const quint64&price_per_hour_, const QByteArray &pay_to_address_hash)
 {
     QByteArray var;
     auto buffer=QDataStream(&var,QIODevice::WriteOnly | QIODevice::Append);
@@ -113,17 +113,15 @@ QByteArray Booking::serialize_state(const std::set<Booking>&books, const quint64
     }
     buffer<<price_per_hour_;
     buffer.writeRawData(pay_to_address_hash,32);
-    buffer<<consindex;
     return var;
 
 }
 
-std::tuple<std::set<Booking>, quint64, QByteArray,quint32> Booking::deserialize_state(QByteArray& state)
+std::tuple<std::set<Booking>, quint64, QByteArray> Booking::deserialize_state(QByteArray& state)
 {
     std::set<Booking> var;
     auto pay_to_address_hash=QByteArray(32,0);
     quint64 price;
-    quint32 consindex;
     if(state.size()>=46)
     {
         auto buffer=QDataStream(&state,QIODevice::ReadOnly);
@@ -144,11 +142,11 @@ std::tuple<std::set<Booking>, quint64, QByteArray,quint32> Booking::deserialize_
 
             buffer>>price;
             buffer.readRawData(pay_to_address_hash.data(),32);
-	    buffer>>consindex;
+
         }
     }
 
-    return {var,price,pay_to_address_hash,consindex};
+    return {var,price,pay_to_address_hash};
 }
 Booking Booking::get_new_booking_from_metadata(QByteArray& metadata)
 {
