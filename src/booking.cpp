@@ -122,14 +122,12 @@ std::tuple<std::set<Booking>, quint64, QByteArray> Booking::deserialize_state(QB
     std::set<Booking> var;
     auto pay_to_address_hash=QByteArray(32,0);
     quint64 price;
-    qDebug()<<"state.size:"<<state.size();
-    if(state.size()>=46)
+    if(state.size()>=42)
     {
         auto buffer=QDataStream(&state,QIODevice::ReadOnly);
         buffer.setByteOrder(QDataStream::LittleEndian);
         quint16 nbooks;
         buffer>>nbooks;
-qDebug()<<"nbooks:"<<nbooks;
         if(state.size()==42+nbooks*16)
         {
             for (auto i=0;i<nbooks;i++)
@@ -143,7 +141,6 @@ qDebug()<<"nbooks:"<<nbooks;
             }
 
             buffer>>price;
-qDebug()<<"price:"<<price;
             buffer.readRawData(pay_to_address_hash.data(),32);
 
         }
