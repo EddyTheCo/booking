@@ -1,7 +1,7 @@
 #include"booking.hpp"
 #include <QJsonObject>
 #include <QJsonDocument>
-
+#include <QJsonArray>
 
 bool Booking::check_validity(const QDateTime & ref)const
 {
@@ -45,8 +45,34 @@ quint64 Booking::calculate_price(quint64 per_hour)const
     const auto hours=((*this)["finish"].toInteger()-(*this)["start"].toInteger()+1)/60/60;
     return per_hour*hours;
 }
+std::vector<Booking> Booking::from_Array(const QJsonArray &books)
+{
+    quint64 start=0;
+    std::vector<Booking> var;
+    for(auto i=0;i<books.size();i++)
+    {
 
+        if(i%2)
+        {
+            auto finish=books.at(i).toInteger();
+            auto b=Booking({{"start",QString::number(start)},{"finish",QString::number(finish)}});
+            var.push_back(b);
+        }
+        else
+        {
+            start=books.at(i).toInteger();
+        }
 
+    }
+    return var;
+}
+quint64 Booking::calculate_price(const QJsonArray &books,quint64 per_hour)
+{
+    quint64 total=0;
+    auto vec=from_Array(books);
+    for (const auto &v:vec)total+=v.calculate_price(per_hour);
+    return total;
+}
 
 Booking Booking::get_new_booking_from_metadata(const QByteArray &metadata)
 {
@@ -58,7 +84,8 @@ Booking Booking::get_new_booking_from_metadata(const QByteArray &metadata)
 
     return Booking();
 }
-QByteArray Booking::create_new_bookings_metadata(Booking &book)
+QByteArray Booking::create_new_bookings_metadata(const QJsonArray &books)
 {
-    return QJsonDocument(book).toJson();
+    const auto booking=QJsonObject({{"bookings",books}});
+    return QJsonDocument(booking).toJson();
 }
