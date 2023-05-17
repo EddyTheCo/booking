@@ -47,20 +47,14 @@ quint64 Booking::calculate_price(quint64 per_hour)const
 }
 std::vector<Booking> Booking::from_Array(const QJsonArray &books)
 {
-    quint64 start=0;
     std::vector<Booking> var;
     for(auto i=0;i<books.size();i++)
     {
 
         if(i%2)
         {
-            auto finish=books.at(i).toInteger();
-            auto b=Booking({{"start",QString::number(start)},{"finish",QString::number(finish)}});
+            auto b=Booking({{"start",books.at(i-1)},{"finish",books.at(i)}});
             var.push_back(b);
-        }
-        else
-        {
-            start=books.at(i).toInteger();
         }
 
     }
@@ -74,15 +68,31 @@ quint64 Booking::calculate_price(const QJsonArray &books,quint64 per_hour)
     return total;
 }
 
-Booking Booking::get_new_booking_from_metadata(const QByteArray &metadata)
+QJsonArray Booking::get_new_bookings_from_metadata(const QByteArray &metadata)
 {
     const auto var=QJsonDocument::fromJson(metadata).object();
-    if(!var["start"].isUndefined()&&!var["finish"].isUndefined()&&
-            var["start"].toInteger()>0&&var["finish"].toInteger()>0&&
-            var["finish"].toInteger()>var["start"].toInteger())
-        return Booking(var);
+    QJsonArray nbooks;
+    if(!var["bookings"].isUndefined()&&var["bookings"].isArray())
+    {
+        auto books=var["bookings"].toArray();
+        quint64 start=0;
+        const auto now=QDateTime::currentDateTime().toSecsSinceEpoch();
+        for(auto i=0;i<books.size();i++)
+        {
 
-    return Booking();
+            if(i%2)
+            {
+                if(books.at(i).toInteger()>books.at(i-1).toInteger()&&books.at(i).toInteger()>now)
+                {
+                    nbooks.push_back(books.at(i-1));
+                    nbooks.push_back(books.at(i));
+                }
+            }
+
+        }
+        return nbooks;
+    }
+    return QJsonArray();
 }
 QByteArray Booking::create_new_bookings_metadata(const QJsonArray &books)
 {

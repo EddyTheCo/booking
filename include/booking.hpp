@@ -28,7 +28,7 @@ class Booking : public QJsonObject
 		quint64 calculate_price(quint64 per_hour)const;
         static quint64 calculate_price(const QJsonArray &books,quint64 per_hour);
         static std::vector<Booking> from_Array(const QJsonArray &books);
-        static Booking get_new_booking_from_metadata(const QByteArray& metadata);
+        static QJsonArray get_new_bookings_from_metadata(const QByteArray& metadata);
         static QByteArray create_new_bookings_metadata(const QJsonArray &books);
 
 };
