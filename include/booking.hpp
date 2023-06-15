@@ -7,7 +7,14 @@
 #include<QJsonValue>
 #include<QJsonObject>
 #include<set>
-class Booking : public QJsonObject
+
+#include <QtCore/QtGlobal>
+#if defined(WINDOWS_BOOKI)
+# define BOOKI_EXPORT Q_DECL_EXPORT
+#else
+#define BOOKI_EXPORT Q_DECL_IMPORT
+#endif
+class BOOKI_EXPORT Booking : public QJsonObject
 {
 	public:
     using QJsonObject::QJsonObject;
